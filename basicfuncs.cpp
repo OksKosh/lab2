@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <bitset>
+#include <cmath>
 
 void get_system_info() {
 	SYSTEM_INFO info;
@@ -27,7 +28,18 @@ void get_system_info() {
 }
 
 void get_memory_status() {
+	MEMORYSTATUS status;
+	GlobalMemoryStatus(&status);
 	
+	std::cout << "Percentage of physical memory in use: " << status.dwMemoryLoad << "\n";
+	std::cout << "Actual physical memory: " << status.dwTotalPhys / pow(2, 30) << " Gbytes\n";
+	std::cout << "Physical memory currently available: " << status.dwAvailPhys / pow(2, 30) << " Gbytes\n";
+	std::cout << "Commited memory limit: " << status.dwTotalPageFile / pow(2, 30) << " Gbytes\n";
+	std::cout << "Current process can commit " << status.dwAvailPageFile / pow(2, 30) << " Gbytes\n";
+	std::cout << "User-mode portion of virtual adress space: ";
+	std::cout << status.dwTotalVirtual / pow(2, 30) << " Gbytes\n";
+	std::cout << "Unreserved and uncommited virtual memory: ";
+	std::cout << status.dwAvailVirtual / pow(2, 30) << " Gbytes\n";
 }
 
 void get_space_status() {
