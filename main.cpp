@@ -18,7 +18,7 @@ int get_option() {
 	int option = 0;
 	std::cin >> option;
 	
-	while (std::cin.fail() || option > 11 || option < 0) {
+	while (std::cin.fail() || option > 8 || option < 0) {
 		std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         
