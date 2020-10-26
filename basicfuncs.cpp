@@ -8,12 +8,8 @@ void get_system_info() {
 	SYSTEM_INFO info;
 	GetSystemInfo(&info);
 	
-	for (auto el: PROCESSOR_ARCHITECTURE) {
-	    if (el.first == info.wProcessorArchitecture) {
-	        std::cout << "The processor architecture is " << el.second << "\n";
-	    }
-	}
-	
+	std::cout << "The processor architecture is ";
+	std::cout << PROCESSOR_ARCHITECTURE[info.wProcessorArchitecture] << "\n";
 	std::cout << "Page size: " << info.dwPageSize << "\n";
 	std::cout << "Pointer to the lowest adress accesible: ";
 	std::cout << info.lpMinimumApplicationAddress << "\n";
@@ -42,8 +38,62 @@ void get_memory_status() {
 	std::cout << status.dwAvailVirtual / pow(2, 30) << " Gbytes\n";
 }
 
-void get_space_status() {
+void get_space_status() {	
+	MEMORY_BASIC_INFORMATION info;
 	
+	SYSTEM_INFO sys_info;
+	GetSystemInfo(&sys_info);
+
+	std::cout << "Enter memory address in range from ";
+    std::cout << sys_info.lpMinimumApplicationAddress << " to ";
+    std::cout << sys_info.lpMaximumApplicationAddress << "\n";
+
+	DWORD64 address;
+	std::cin >> address;	
+
+	if (!VirtualQuery((LPCVOID)address, &info, sizeof(info))) {
+		std::cout << "Can not get this address space status";
+		return;
+	}
+	
+    std::cout << "Base address: " << info.BaseAddress << "\n";
+    std::cout << "Allocation base address: " << info.AllocationBase << "\n";
+    
+    std::cout << "Protection option value on initial alloc: ";
+	std::cout <<  info.AllocationProtect << "\n";
+	std::cout << "Meaning:\n";
+    for (auto el : PROTECT_CONSTANTS) {
+        if (info.AllocationProtect & el.first) {
+            std::cout << el.second << "\n";
+        }
+    }
+
+    std::cout << "Region size: " << info.RegionSize << " bytes\n";
+    
+    std::cout << "Page state value: " << info.State << "\n";
+    std::cout << "Meaning:\n";
+    for (auto el : STATE) {
+        if (info.State & el.first) {
+            std::cout << el.second << "\n";
+        }
+    }
+	
+	std::cout << "Access protection value: ";
+	std::cout <<  info.Protect << "\n";
+	std::cout << "Meaning:\n";
+    for (auto el : PROTECT_CONSTANTS) {
+        if (info.Protect & el.first) {
+            std::cout << el.second << "\n";
+        }
+    }
+
+    std::cout << "Page type value: " << info.Type << "\n";
+	std::cout << "Meaning:\n";
+    for (auto el : TYPE) {
+        if (info.Type & el.first) {
+            std::cout << el.second << "\n";
+        }
+    }
 }
 
 void reserve_region() {
