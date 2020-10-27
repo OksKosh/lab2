@@ -145,7 +145,32 @@ void alocate_region() {
 }
 
 void write_to_space() {
+	PVOID start_addr_ptr = 0;
+    std::cout << "Enter starting address (0 for auto): 0x";
+    std::cin >> std::hex >> start_addr_ptr;
+
+	MEMORY_BASIC_INFORMATION mem_info;
+	VirtualQuery((LPCVOID)start_addr_ptr, &mem_info, sizeof(mem_info));
+	if (start_addr_ptr != 0 && mem_info.Protect & PAGE_NOACCESS) {
+		std::cout << "Can not write to protected memory\n";
+		return;
+	}
+
+	int data = 0;
+	std::cout << "Enter data (int): ";
+	std::cin >> data;
 	
+	PVOID mem_ptr = 0;	
+	if (start_addr_ptr) {
+		memcpy(start_addr_ptr, &data, sizeof(int));
+		std::cout << "At " << std::hex << start_addr_ptr;
+		std::cout << " written value is " << std::dec << (*(PDWORD)start_addr_ptr) << "\n";
+	} else {
+		mem_ptr = VirtualAlloc(start_addr_ptr, sizeof(int), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+		memcpy(mem_ptr, &data, sizeof(int));
+		std::cout << "At " << std::hex << mem_ptr;
+		std::cout << " written value is " << std::dec << (*(PDWORD)mem_ptr) << "\n";
+	}
 }
 
 void set_protect() {
