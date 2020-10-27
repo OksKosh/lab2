@@ -4,6 +4,15 @@
 #include <bitset>
 #include <cmath>
 
+std::map<int, std::string> PROCESSOR_ARCHITECTURE = {
+	{9, "x64 (AMD or Intel)."},
+	{5, "ARM."},
+	{12, "ARM64."},
+	{6, "Intel Itanium-based."},
+	{0, "x86."},
+	{0xffff, "unknown."},
+};
+
 void get_system_info() {
 	SYSTEM_INFO info;
 	GetSystemInfo(&info);
@@ -49,7 +58,8 @@ void get_space_status() {
     std::cout << sys_info.lpMaximumApplicationAddress << "\n";
 
 	DWORD64 address;
-	std::cin >> address;	
+	std::cout << "0x";
+	std::cin >> std::hex >> address;	
 
 	if (!VirtualQuery((LPCVOID)address, &info, sizeof(info))) {
 		std::cout << "Can not get this address space status";
@@ -57,41 +67,37 @@ void get_space_status() {
 	}
 	
     std::cout << "Base address: " << info.BaseAddress << "\n";
-    std::cout << "Allocation base address: " << info.AllocationBase << "\n";
+    std::cout << "Allocation base address: " << std::hex << info.AllocationBase << "\n";
     
     std::cout << "Protection option value on initial alloc: ";
 	std::cout <<  info.AllocationProtect << "\n";
-	std::cout << "Meaning:\n";
     for (auto el : PROTECT_CONSTANTS) {
         if (info.AllocationProtect & el.first) {
-            std::cout << el.second << "\n";
+            std::cout << "It is " << el.second << "\n";
         }
     }
 
     std::cout << "Region size: " << info.RegionSize << " bytes\n";
     
     std::cout << "Page state value: " << info.State << "\n";
-    std::cout << "Meaning:\n";
     for (auto el : STATE) {
         if (info.State & el.first) {
-            std::cout << el.second << "\n";
+            std::cout << "It is " << el.second << "\n";
         }
     }
 	
 	std::cout << "Access protection value: ";
 	std::cout <<  info.Protect << "\n";
-	std::cout << "Meaning:\n";
     for (auto el : PROTECT_CONSTANTS) {
         if (info.Protect & el.first) {
-            std::cout << el.second << "\n";
+            std::cout << "It is " << el.second << "\n";
         }
     }
 
     std::cout << "Page type value: " << info.Type << "\n";
-	std::cout << "Meaning:\n";
     for (auto el : TYPE) {
         if (info.Type & el.first) {
-            std::cout << el.second << "\n";
+            std::cout << "It is " << el.second << "\n";
         }
     }
 }
