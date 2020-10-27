@@ -103,7 +103,28 @@ void get_space_status() {
 }
 
 void reserve_region() {
-	
+	PVOID start_addr_ptr = 0;
+    std::cout << "Enter starting address (0 for auto): 0x";
+    std::cin >> std::hex >> start_addr_ptr;
+
+	DWORD dwSize = 0;
+    std::cout << "Enter size of a region in bytes: ";
+    std::cin >> dwSize;
+
+	PVOID alloc_addr_ptr = VirtualAlloc(start_addr_ptr, dwSize, MEM_RESERVE, PAGE_READWRITE);
+	if (alloc_addr_ptr != NULL) {
+        std::cout << "Memory reserved\n";
+	} else {
+        std::cout << "Can't reserve memory!\n";
+	}
+
+	alloc_addr_ptr = VirtualAlloc(alloc_addr_ptr, dwSize, MEM_COMMIT, PAGE_READWRITE);
+	if (alloc_addr_ptr != NULL) {
+        std::cout << "Memory commited\n";
+	} else {
+        std::cout << "Can't commit memory!\n";
+		return;
+	}
 }
 
 void alocate_region() {
