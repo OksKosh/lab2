@@ -174,9 +174,59 @@ void write_to_space() {
 }
 
 void set_protect() {
-	
+	PVOID start_addr_ptr = 0;
+    std::cout << "Enter starting address (0 for auto): 0x";
+    std::cin >> std::hex >> start_addr_ptr;    
+    
+    MEMORY_BASIC_INFORMATION mem_info;
+	PVOID mem_ptr = 0;
+	DWORD old_protect = 0;
+	if (start_addr_ptr) {
+		VirtualProtect(start_addr_ptr, sizeof(int), PAGE_NOACCESS, &old_protect);
+        std::cout << "Memory protected \n";
+        VirtualQuery((LPCVOID)start_addr_ptr, &mem_info, sizeof(mem_info));
+		std::cout << "Access protection value: ";
+		std::cout <<  mem_info.Protect << "\n";
+    	for (auto el : PROTECT_CONSTANTS) {
+	        if (mem_info.Protect & el.first) {
+	            std::cout << "It is " << el.second << "\n";
+	        }
+	    }
+	} else {
+		mem_ptr = VirtualAlloc(start_addr_ptr, sizeof(int), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+		if (mem_ptr != NULL) {
+            std::cout << "Memory allocated \n";
+			VirtualQuery((LPCVOID)mem_ptr, &mem_info, sizeof(mem_info));
+			std::cout << "Access protection value: ";
+			std::cout <<  mem_info.Protect << "\n";
+	    	for (auto el : PROTECT_CONSTANTS) {
+		        if (mem_info.Protect & el.first) {
+		            std::cout << "It is " << el.second << "\n";
+		        }
+		    }
+		}
+
+		VirtualProtect(mem_ptr, sizeof(int), PAGE_NOACCESS, &old_protect);
+        std::cout << "Memory Protected \n";
+		VirtualQuery((LPCVOID)start_addr_ptr, &mem_info, sizeof(mem_info));
+		std::cout << "Access protection value: ";
+		std::cout <<  mem_info.Protect << "\n";
+    	for (auto el : PROTECT_CONSTANTS) {
+	        if (mem_info.Protect & el.first) {
+	            std::cout << "It is " << el.second << "\n";
+	        }
+	    }
+	}
 }
 
 void free_region() {
-	
+	PVOID start_addr_ptr = 0;
+    std::cout << "Enter starting address (0 for auto): 0x";
+    std::cin >> std::hex >> start_addr_ptr;
+
+	if (VirtualFree(start_addr_ptr, 0, MEM_RELEASE)) {
+		std::cout << "Memory freed\n";
+	} else {
+		std::cout << "Can not free memory!\n";
+	}
 }
